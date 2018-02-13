@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+environment/project/cdt.managedbuild.config.gnu.cygwin.exe.debug.899227262/PATH/delimiter=;
+environment/project/cdt.managedbuild.config.gnu.cygwin.exe.debug.899227262/PATH/operation=replace
+environment/project/cdt.managedbuild.config.gnu.cygwin.exe.debug.899227262/PATH/value=C\:\\Programming\\cygwin\\bin;C\:\\Windows\\system32;C\:\\Windows;C\:\\Windows\\System32\\Wbem;C\:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C\:\\Programming\\doxygen\\bin;C\:\\Programming\\graphviz\\bin;C\:\\Programming\\MiKTeX\\miktex\\bin\\;C\:\\Programming\\MatLabR2012b\\runtime\\win32;C\:\\Programming\\MatLabR2012b\\bin;C\:\\Programming\\matlab\\runtime\\win64;C\:\\Programming\\matlab\\bin;C\:\\Program Files\\Java\\jdk1.7.0_09\\bin;C\:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C\:\\Program Files\\Java\\jre7\\bin;C\:\\Programming\\yagarto-tools-20121018\\bin;C\:\\Programming\\yagarto-20121222\\bin;C\:\\Windows\\System32\\WindowsPowerShell\\v1.0\\;C\:\\Program Files\\TortoiseSVN\\bin;C\:\\Program Files (x86)\\GPAC
+environment/project/cdt.managedbuild.config.gnu.cygwin.exe.debug.899227262/append=true
+environment/project/cdt.managedbuild.config.gnu.cygwin.exe.debug.899227262/appendContributed=true
