@@ -34,7 +34,7 @@ std::ostream& operator<<(std::ostream& out, Counter const& counter){
 }
 
 struct DemoThreadLocal{
-	static constexpr std::size_t MAXTHREADS = 2;
+	static constexpr std::size_t MAXTHREADS = 4;
 	Counter *localCounts[MAXTHREADS]; //
 
 	DemoThreadLocal()
@@ -53,14 +53,14 @@ struct DemoThreadLocal{
 		std::atomic_thread_fence( std::memory_order_release);
 	}
 	void resetLocals(){
-		localCounts[0]->counter.store(-1, std::memory_order_relaxed);
-		localCounts[1]->counter.store(-1, std::memory_order_relaxed);
+		for(auto p : localCounts)
+			if(p) p->counter.store(-1, std::memory_order_relaxed);
 	}
 	void printThreadLocals(){
 		std::cout << __PRETTY_FUNCTION__ << std::endl;
 
-		for(Counter** p = &localCounts[0]; p < &localCounts[MAXTHREADS]; ++p)
-			if(*p) std::cout << (*p)->counter.load(std::memory_order_relaxed) << std::endl;
+		for(auto p : localCounts)
+			if(p) std::cout << p->counter.load(std::memory_order_relaxed) << std::endl;
 			else std::cout << "No Pointer set" << std::endl;
 	}
 };

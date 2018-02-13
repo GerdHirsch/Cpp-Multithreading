@@ -10,20 +10,21 @@
 
 #include "DemoThreadLocal.h"
 
+#include <vector>
 #include <iostream>
 #include <chrono>
 using namespace std;
 
-void f(DemoThreadLocal& dtl){
+void f(DemoThreadLocal& dtl, unsigned int threadNum){
 	cout
 		<< " === "
 		<< __PRETTY_FUNCTION__
-		<< " dtl.demoThreadLocal(0);"
+		<< " dtl.demoThreadLocal(" << threadNum << ");"
 		<< endl;
-	dtl.demoThreadLocal(1);
-	while(dtl.localCounts[1]->counter != -1)
+	dtl.demoThreadLocal(threadNum);
+	while(dtl.localCounts[threadNum]->counter.load(std::memory_order_relaxed) != -1)
 		;
-	cout << "end "<< __PRETTY_FUNCTION__ << endl;
+	cout << "end " << __PRETTY_FUNCTION__ << endl;
 
 }
 
@@ -36,19 +37,31 @@ int main(){
 		cout << "=== main: dtl.demoThreadLocal(0);" << endl;
 		dtl.demoThreadLocal(0);
 
+		cout << "=== main: dtl.printThreadLocals();" << endl;
 		dtl.printThreadLocals();
 
-		cout << "=== main: std::thread t(f, std::ref(dtl));" << endl;
-		std::thread t(f, std::ref(dtl));
 
+		cout << endl << endl;
+
+		vector<thread> threads;
+		for(unsigned int i = 1; i < DemoThreadLocal::MAXTHREADS; ++i){
+			cout << "=== main: std::thread t(f, std::ref(dtl));" << endl;
+			threads.emplace_back(f, std::ref(dtl), i );
+		}
+		cout << "=== main: sleep_for(chrono::milliseconds(10));" << endl;
 		this_thread::sleep_for(chrono::milliseconds(10));
 
 		cout << "=== main: dtl.printThreadLocals();" << endl;
 		dtl.printThreadLocals();
+
 		cout << "=== main: dtl.resetLocals();" << endl;
 		dtl.resetLocals();
-		dtl.printThreadLocals();
-		t.join();
+//		dtl.printThreadLocals();
+
+		for(auto& t : threads){
+			cout << "=== main: t.join();" << endl;
+			t.join();
+		}
 	}
 	cout << "end ThreadLocal" << endl;
 }
