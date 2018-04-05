@@ -94,11 +94,18 @@ void demoReallyAsync(){
 	}
 }
 //---------------------------------------------------------------------
+void demoIgnoreFuture(){
+	std::cout << __PRETTY_FUNCTION__ << std::endl;
+	auto future = reallyAsync(myTask);
+
+	return;
+}
 int main(){
 	cout << "DemoAsync" << endl;
 //	demoDeferedProblem();
-	demoDeferedSolution();
+//	demoDeferedSolution();
 //	demoReallyAsync();
+	demoIgnoreFuture();
 }
 
 
