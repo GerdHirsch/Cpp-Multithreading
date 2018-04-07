@@ -80,13 +80,26 @@ void demoThreadRAIIJoinByReference(){
 	std::cout << "sum: " << myTask.sum << std::endl;
 
 }
+
+void demoThreadRAIIMove(){
+	std::cout << __PRETTY_FUNCTION__ << std::endl;
+	MyTask myTask;
+	ThreadRAII<> tr0( (std::thread(std::ref(myTask))) );
+
+	ThreadRAII<> tr1(std::move(tr0));
+
+//	static_cast<std::thread&>(tr1).join();
+//	std::thread& t = tr1;
+//	t.join();
+	tr1.get().join();
+}
 int main(){
 	cout << "ThreadRAII" << endl;
 
 //	demoThreadRAIIJoin();
-	demoThreadRAIIJoinByReference();
+//	demoThreadRAIIJoinByReference();
 //	demoThreadRAIIDetach();
-
+	demoThreadRAIIMove();
 	std::this_thread::sleep_for(5s);
 	cout << "End of ThreadRAII" << endl;
 }
