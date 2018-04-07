@@ -3,7 +3,13 @@
  *
  *  Created on: 05.04.2018
  *      Author: Gerd
+ *
  *  Effective Modern C++, Item 37
+ *  things to remember:
+ *  Make threads unjoinable on all paths
+ *  join-on-desturction can lead to difficult-to-debug performance anomalies
+ *  detach-on-destruction can lead to difficult-to-debug undefined behavior
+ *  declare thread objects last in lists of data members ThreadRAII
  */
 
 #include "ThreadRAII.h"
@@ -61,6 +67,7 @@ void demoThreadRAIIJoin(){
 	}
 	std::cout << "end of " << __PRETTY_FUNCTION__ << std::endl;
 }
+
 void demoThreadRAIIDetach(){
 	std::cout << __PRETTY_FUNCTION__ << std::endl;
 
@@ -93,13 +100,20 @@ void demoThreadRAIIMove(){
 //	t.join();
 	tr1.get().join();
 }
+
+void demoDoWork();
+
 int main(){
 	cout << "ThreadRAII" << endl;
 
 //	demoThreadRAIIJoin();
 //	demoThreadRAIIJoinByReference();
 //	demoThreadRAIIDetach();
-	demoThreadRAIIMove();
+//	demoThreadRAIIMove();
+
+	//  terminates process!
+	demoDoWork();
+
 	std::this_thread::sleep_for(5s);
 	cout << "End of ThreadRAII" << endl;
 }
