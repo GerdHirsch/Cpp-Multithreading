@@ -6,6 +6,8 @@
  *  Quelle: effective modern C++, Item 36
  */
 
+#include "reallyAsync.h"
+
 #include <future>
 #include <thread>
 #include <iostream>
@@ -17,7 +19,7 @@ using namespace std;
 //---------------------------------------------------------------------
 void myTask(){
 	std::cout << __PRETTY_FUNCTION__ << std::endl;
-	std::this_thread::sleep_for(1'000ms); //1'000'000 eine Million separators C++14
+	std::this_thread::sleep_for(1'000ms); //1'000'000 separators C++14
 }
 //---------------------------------------------------------------------
 void demoDeferedProblem(){
@@ -63,20 +65,6 @@ void demoDeferedSolution(){
 		std::cout << "future async ready!" << std::endl;
 	}
 }
-//---------------------------------------------------------------------
-template<typename Task, typename... Args>
-inline
-auto // C++14 return type deduction
-//std::future<typename std::result_of<Task(Args...)>::type> // return type C++11
-reallyAsync(Task&& task, Args&&... args)
-{
-	return 	std::async
-			(
-					std::launch::async,
-					std::forward<Task>(task),
-					std::forward<Args>(args)...
-			);
-}
 
 void demoReallyAsync(){
 	std::cout << __PRETTY_FUNCTION__ << std::endl;
@@ -100,12 +88,18 @@ void demoIgnoreFuture(){
 
 	return;
 }
+
+//---------------------------------------------------------------------
+
+//---------------------------------------------------------------------
+void demoSharedFuture();
 int main(){
 	cout << "DemoAsync" << endl;
 //	demoDeferedProblem();
 //	demoDeferedSolution();
 //	demoReallyAsync();
-	demoIgnoreFuture();
+//	demoIgnoreFuture();
+	demoSharedFuture();
 }
 
 

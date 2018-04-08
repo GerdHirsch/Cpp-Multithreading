@@ -102,6 +102,7 @@ void demoThreadRAIIMove(){
 }
 
 void demoDoWork();
+void demoSharedFuture();
 
 int main(){
 	cout << "ThreadRAII" << endl;
@@ -110,9 +111,10 @@ int main(){
 //	demoThreadRAIIJoinByReference();
 //	demoThreadRAIIDetach();
 //	demoThreadRAIIMove();
+	demoSharedFuture();
 
 	//  terminates process!
-	demoDoWork();
+//	demoDoWork();
 
 	std::this_thread::sleep_for(5s);
 	cout << "End of ThreadRAII" << endl;
