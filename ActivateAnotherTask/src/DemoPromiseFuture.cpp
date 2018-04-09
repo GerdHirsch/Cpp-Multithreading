@@ -60,26 +60,19 @@ void demoPromiseFutureMultipleThreads(){
 
 	std::promise<void> p;
 	using Future = decltype(p.get_future().share());
+	auto lambda = [duration](Future f){
+
+		this_thread::sleep_for(duration);
+
+		cout << "before f.wait() " << __PRETTY_FUNCTION__ << "thread id: " << this_thread::get_id() << endl;
+		f.wait(); // #1
+		cout << "after f.wait() " << endl;
+		};
+
 	auto sf = p.get_future().share();
 
-	std::thread t0([duration](Future f){
-
-		this_thread::sleep_for(duration);
-
-		cout << "before f.wait() " << __PRETTY_FUNCTION__ << "thread id: " << this_thread::get_id() << endl;
-		f.wait(); // #1
-		cout << "after f.wait() " << endl;
-		}, sf
-	);
-	std::thread t1([duration](Future f){
-
-		this_thread::sleep_for(duration);
-
-		cout << "before f.wait() " << __PRETTY_FUNCTION__ << "thread id: " << this_thread::get_id() << endl;
-		f.wait(); // #1
-		cout << "after f.wait() " << endl;
-		}, sf
-	);
+	std::thread t0(lambda, sf);
+	std::thread t1(lambda, sf);
 
 	if(notifyBeforeWait)
 		this_thread::sleep_for(duration - 100ms); // notifiy before wait
