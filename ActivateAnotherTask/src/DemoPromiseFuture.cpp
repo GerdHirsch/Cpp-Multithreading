@@ -7,6 +7,7 @@
 
 #include <future>
 #include <thread>
+#include <vector>
 #include <iostream>
 using namespace std;
 
@@ -71,8 +72,11 @@ void demoPromiseFutureMultipleThreads(){
 
 	auto sf = p.get_future().share();
 
-	std::thread t0(lambda, sf);
-	std::thread t1(lambda, sf);
+	constexpr int numThreads = 3;
+	vector<thread> threads;
+	for(int i=0; i<numThreads; ++i)
+		threads.push_back(thread(lambda, sf));
+//		threads.emplace(lambda, sf);
 
 	if(notifyBeforeWait)
 		this_thread::sleep_for(duration - 100ms); // notifiy before wait
@@ -83,8 +87,8 @@ void demoPromiseFutureMultipleThreads(){
 	p.set_value(); // #2
 	cout << "after p.set_value() " << endl;
 
-	t0.join();
-	t1.join();
+	for(int i=0; i<numThreads; ++i)
+		threads[i].join();
 }
 
 
