@@ -25,6 +25,7 @@ void demoConditionVariable(){
 	cout << __PRETTY_FUNCTION__ << "thread id: " << this_thread::get_id() << endl;
 	DemoConditionVariable dcv;
 
+	bool notifyBeforeWait = false;
 	auto duration = 100ms;
 
 	std::thread t
@@ -41,7 +42,6 @@ void demoConditionVariable(){
 			cout << "after cv.wait(lk) " <<  endl;
 	});
 
-	bool notifyBeforeWait = false;
 	if(notifyBeforeWait)
 		this_thread::sleep_for(duration - 100ms); // notifiy before wait
 	else

@@ -1,5 +1,5 @@
 /*
- * main.cpp
+ main.cpp
  *
  *  Created on: 09.04.2018
  *      Author: Gerd
@@ -12,14 +12,17 @@ using namespace std;
 
 void demoConditionVariable();
 void demoPromiseFuture();
+void demoPromiseFutureMultipleThreads();
 
 int main(){
 	cout << "ActivateAnotherTask" << endl;
 
+//	cout << endl;
+//	demoPromiseFuture();
 	cout << endl;
-	demoPromiseFuture();
-	cout << endl;
-	demoConditionVariable();
+	demoPromiseFutureMultipleThreads();
+//	cout << endl;
+//	demoConditionVariable();
 }
 
 

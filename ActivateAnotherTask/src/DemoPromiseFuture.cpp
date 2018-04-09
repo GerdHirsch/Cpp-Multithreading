@@ -22,6 +22,7 @@ using namespace std;
 void demoPromiseFuture(){
 	cout << __PRETTY_FUNCTION__ << "thread id: " << this_thread::get_id() << endl;
 
+	bool notifyBeforeWait = true;
 	auto duration = 100ms;
 
 	std::promise<void> p;
@@ -38,7 +39,6 @@ void demoPromiseFuture(){
 
 	);
 
-	bool notifyBeforeWait = true;
 	if(notifyBeforeWait)
 		this_thread::sleep_for(duration - 100ms); // notifiy before wait
 	else
@@ -51,5 +51,47 @@ void demoPromiseFuture(){
 	t.join();
 }
 
+
+void demoPromiseFutureMultipleThreads(){
+	cout << __PRETTY_FUNCTION__ << "thread id: " << this_thread::get_id() << endl;
+
+	auto duration = 100ms;
+	bool notifyBeforeWait = false;
+
+	std::promise<void> p;
+	using Future = decltype(p.get_future().share());
+	auto sf = p.get_future().share();
+
+	std::thread t0([duration](Future f){
+
+		this_thread::sleep_for(duration);
+
+		cout << "before f.wait() " << __PRETTY_FUNCTION__ << "thread id: " << this_thread::get_id() << endl;
+		f.wait(); // #1
+		cout << "after f.wait() " << endl;
+		}, sf
+	);
+	std::thread t1([duration](Future f){
+
+		this_thread::sleep_for(duration);
+
+		cout << "before f.wait() " << __PRETTY_FUNCTION__ << "thread id: " << this_thread::get_id() << endl;
+		f.wait(); // #1
+		cout << "after f.wait() " << endl;
+		}, sf
+	);
+
+	if(notifyBeforeWait)
+		this_thread::sleep_for(duration - 100ms); // notifiy before wait
+	else
+		this_thread::sleep_for(duration + 100ms); // notifiy after wait
+
+	cout << "before p.set_value() " << endl;
+	p.set_value(); // #2
+	cout << "after p.set_value() " << endl;
+
+	t0.join();
+	t1.join();
+}
 
 
