@@ -11,7 +11,7 @@
 #include <iostream>
 using namespace std;
 
-//constexpr auto tenMillion = 10'000'000; //C++14 digit separator
+constexpr auto _tenMillion = 10'000'000; //C++14 digit separator
 constexpr auto tenMillion = 10; // for demo
 using GoodValues = std::vector<int>;
 

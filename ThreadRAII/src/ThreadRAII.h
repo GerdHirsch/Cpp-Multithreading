@@ -21,7 +21,7 @@ struct DetachPolicy{
 	}
 };
 // Alternativ zu JoinOrDetachPolicy eine enum JoinOrDetach{ join, detach }
-// und einen Ctor(..., JoinOrDetach jod); see Item 37 S.254
+// und einen Ctor(..., JoinOrDetach jod); see Effective Modern C++ Item 37 S.254
 template<typename JoinOrDetachPolicy=JoinPolicy>
 class ThreadRAII : public JoinOrDetachPolicy {
 public:
@@ -42,7 +42,5 @@ public:
 private:
 	std::thread threadToManage;
 };
-
-
 
 #endif /* SRC_THREADRAII_H_ */
