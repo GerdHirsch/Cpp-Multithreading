@@ -9,7 +9,7 @@ using namespace std;
 //#include <chrono> // für s, ms, ... wird nicht benötig
 //using namespace std::chrono_literals;
 
-bool sleep = false;
+bool sleep = true;
 int number{-1};
 //---------------------------------------------------------------------
 std::atomic<bool> readyAtomic{false};
@@ -22,6 +22,7 @@ static std::memory_order mo_store = std::memory_order_relaxed;
 void taskAtomicFunction(){
 	cout << __PRETTY_FUNCTION__ << endl;
 	int count = 0;
+	// polling is almost always a bad idea
 	while( !readyAtomic.load(mo_load) ) {
 //		std::this_thread::yield();
 		++count;
@@ -35,8 +36,7 @@ void demoAtomic(){
 
 	number = 42;
 
-	if(sleep) std::this_thread::sleep_for(1'000ms);
-//	if(sleep) std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+	if(sleep) std::this_thread::sleep_for(1ns);
 
 	readyAtomic.store(true, mo_store);
 	t1.join();
@@ -47,8 +47,9 @@ bool ready{false};
 void taskNonAtomicFunction(){
 	cout << __PRETTY_FUNCTION__ << endl;
 	int count = 0;
+	// polling is almost always a bad idea
 	while( !ready ) {
-//		std::this_thread::yield();
+		std::this_thread::yield();
 		++count;
 	}
 	cout << "count: " << count << endl;
@@ -61,7 +62,7 @@ void demoNonAtomic(){
 
 	number = 42;
 
-	if(sleep) std::this_thread::sleep_for(std::chrono::nanoseconds(1));
+	if(sleep) std::this_thread::sleep_for(1ns);
 
 	ready = true;
 	t1.join();
@@ -70,5 +71,5 @@ void demoNonAtomic(){
 int main(){
 	cout << "StaleData" << endl;
 	demoNonAtomic();
-	demoAtomic();
+//	demoAtomic();
 }
