@@ -5,6 +5,9 @@
  *      Author: Gerd
  */
 
+#include "ThreadRAII.h"
+
+#include <type_traits>
 #include <future>
 #include <thread>
 #include <vector>
@@ -20,11 +23,14 @@ using namespace std;
  * just simple and straight forward
  */
 
-void demoPromiseFuture(){
-	cout << __PRETTY_FUNCTION__ << "thread id: " << this_thread::get_id() << endl;
-
-	bool notifyBeforeWait = true;
+void demoPromiseFutureSimple(){
+	bool activateBefore = true;
 	auto duration = 100ms;
+
+	cout << boolalpha;
+	cout << __PRETTY_FUNCTION__ << " thread id: " << this_thread::get_id() << endl;
+	cout << "activate Before: " << activateBefore << endl;
+
 
 	std::promise<void> p;
 	using Future = decltype(p.get_future());
@@ -37,13 +43,16 @@ void demoPromiseFuture(){
 		f.wait(); // #1
 		cout << "after f.wait() " << endl;
 		}, p.get_future()
-
 	);
 
-	if(notifyBeforeWait)
+	if(activateBefore)
 		this_thread::sleep_for(duration - 100ms); // notifiy before wait
 	else
 		this_thread::sleep_for(duration + 100ms); // notifiy after wait
+
+	//throw exception and than what
+	// see http://scottmeyers.blogspot.de/2013/12/threadraii-thread-suspension-trouble.html
+	// and Effective Modern C++ Item 39
 
 	cout << "before p.set_value() " << endl;
 	p.set_value(); // #2
@@ -52,61 +61,75 @@ void demoPromiseFuture(){
 	t.join();
 }
 
-template<typename Mutex>
-struct NoLock{
-	NoLock(Mutex& m){}
-};
+#define CATCHEXCEPTION
 
-void demoPromiseFutureMultipleThreads(){
-	bool activateBeforeWait = false;
-//	using Lock = std::unique_lock<std::mutex>;
-	using Lock = NoLock<std::mutex>;
-	std::mutex coutMutex;
-
+void demoPromiseFuture(){
+	// different scenarios
+	bool activateBefore = true;
+	bool throwException = true;
+	constexpr bool join{false};
+	using Policy = std::conditional_t<join, JoinPolicy, DetachPolicy>;
 
 	cout << boolalpha;
-	cout << __PRETTY_FUNCTION__ << " thread id: " << this_thread::get_id() << endl;
-	cout << "activate Before Wait: " << activateBeforeWait << endl;
+	cout << __PRETTY_FUNCTION__ << endl;
+	cout << "      thread id: " << this_thread::get_id() << endl;
+	cout << "activate Before: " << activateBefore << endl;
+	cout << " throwException: " << throwException << endl;
+	cout << "           join: " << join << endl;
 
-	auto duration = 100ms;
+	auto delay = 100ms;
 
+	// create ThreadRAII before promise!
+	// But this is not acquisition is initialization!
+	// promise will be deleted before tr
+	// in case of exception, future.get() will be interrupted via exception
+	// but future.wait() not!
+	ThreadRAII<Policy> tr;
+
+//	std::promise<bool> p;
 	std::promise<void> p;
-	using Future = decltype(p.get_future().share());
-	auto lambda = [&coutMutex, duration](Future f){
 
-		this_thread::sleep_for(duration);
-		{
-			Lock lk(coutMutex);
-			cout << "before f.wait() " << "thread id: " << this_thread::get_id() << " " << __PRETTY_FUNCTION__  << endl;
-		}
-		f.wait(); // #1
+	auto lambda =
+	[delay](auto future){
+			cout << endl
+				 << __PRETTY_FUNCTION__ << endl;
+			cout << "thread id: " << this_thread::get_id() << endl;
+			this_thread::sleep_for(delay);
+			cout << "before future access " << endl;
 
-		Lock lk(coutMutex);
-		cout << "after f.wait() " << " thread id: " << this_thread::get_id() << endl;
+#ifdef CATCHEXCEPTION // demo system behavior if you don´t catch it
+			try{
+#endif
+//				future.wait(); // #1 löst keine exception aus
+				future.get(); // #1 löst exception aus
+				cout << endl << "after future access " << endl;
+
+				// for promise<bool>
+//				bool taskCanRun = future.get(); // #1
+//				cout << endl << "after future.get() taskCanRun: " << taskCanRun << endl;
+
+#ifdef CATCHEXCEPTION
+			}catch(std::future_error& e){
+				cout << endl << "lambda catch: " << e.what() << endl;
+			}
+#endif
 		};
 
-	auto sf = p.get_future().share();
+	// initialize ThreadRAII
+	tr.set(std::thread(lambda, p.get_future()) );
 
-	constexpr int numThreads = 4;
-	vector<thread> threads;
-	for(int i=0; i<numThreads; ++i)
-		threads.push_back(thread(lambda, sf));
-//		threads.emplace(lambda, sf);
-
-	if(activateBeforeWait)
-		this_thread::sleep_for(duration - 100ms); // notifiy before wait
+	if(activateBefore)
+		this_thread::sleep_for(delay - 100ms); // notifiy before wait
 	else
-		this_thread::sleep_for(duration + 100ms); // notifiy after wait
+		this_thread::sleep_for(delay + 100ms); // notifiy after wait
 
-	cout << "before p.set_value() " << endl;
+	// if here happens an exception
+	if(throwException)
+		throw std::logic_error("Demo broken promise");
+
+	cout << endl << "before p.set_value() " << endl;
+//	p.set_value(true); // #2
 	p.set_value(); // #2
-	{
-		Lock lk(coutMutex);
-		cout << "after p.set_value() " << endl;
-	}
-
-	for(int i=0; i<numThreads; ++i)
-		threads[i].join();
+	cout << endl << "after p.set_value() " << endl;
 }
-
 
