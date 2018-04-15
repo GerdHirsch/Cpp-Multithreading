@@ -17,7 +17,7 @@ void demoPromiseRAII(){
 	// different scenarios
 #define CATCHEXCEPTION
 	bool activateBefore = true;
-	bool throwException = true;
+	bool throwException = false;
 
 	cout << boolalpha;
 	cout << __PRETTY_FUNCTION__ << endl;
@@ -47,10 +47,7 @@ void demoPromiseRAII(){
 #endif
 		};
 
-
-	std::promise<void> p;
-	auto latchedTask = makeLatchedTasks(std::move(p), lambda0);
-
+	auto latchedTask = makeLatchedTasks(std::promise<void>() , lambda0);
 
 	if(activateBefore)
 		this_thread::sleep_for(delay - delay); // notifiy before wait
@@ -91,7 +88,7 @@ void demoPromiseRAIISharedFuture(){
 	const unsigned int numThreads = std::thread::hardware_concurrency();
 
 	bool activateBefore{false};
-	bool throwException{false};
+	bool throwException{true};
 
 	constexpr bool coutLock = false;
 	using Lock = std::conditional_t<coutLock, std::unique_lock<std::mutex>, Demo::NoLock<std::mutex>>;
@@ -139,8 +136,8 @@ void demoPromiseRAIISharedFuture(){
 		}
 #endif
 	};
-	std::promise<bool> promise;
-	auto latchedTasks = makeLatchedTasks(std::move(promise), lambda, Demo::task);
+
+	auto latchedTasks = makeLatchedTasks(std::promise<bool>(), lambda, Demo::task);
 
 	if(activateBefore)
 		this_thread::sleep_for(delay - 100ms); // activate before

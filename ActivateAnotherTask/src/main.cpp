@@ -5,7 +5,8 @@
  *      Author: Gerd
  *  Effective Modern C++, Item 39
  *  start threads suspended to allocate the needed resources and run the thread immediately
- *  wenn an event occurs
+ *  when an event occurs
+ *  http://scottmeyers.blogspot.de/2013/12/threadraii-thread-suspension-trouble.html
  *  https://stackoverflow.com/questions/3156852/why-would-i-want-to-start-a-thread-suspended
  *
  *  see also project StaleData for a loop based bad polling solution
@@ -33,7 +34,8 @@ int main(){
 //	cout << endl;
 //	demoPromiseSharedFuture();
 	cout << endl;
-//	demoPromiseRAII();
+	demoPromiseRAII();
+	cout << endl;
 	demoPromiseRAIISharedFuture();
 //	cout << endl;
 //	demoConditionVariable();
