@@ -20,16 +20,21 @@ void demoPromiseFutureSimple();
 void demoPromiseFuture();
 void demoPromiseSharedFuture();
 
+void demoPromiseRAII();
+void demoPromiseRAIISharedFuture();
+
 int main(){
 	cout << "ActivateAnotherTask" << endl;
 
 	try{
-	cout << endl;
 //	demoPromiseFutureSimple();
+//	cout << endl;
 //	demoPromiseFuture();
 //	cout << endl;
-//	demoPromiseFutureMultipleThreads();
-	demoPromiseSharedFuture();
+//	demoPromiseSharedFuture();
+	cout << endl;
+//	demoPromiseRAII();
+	demoPromiseRAIISharedFuture();
 //	cout << endl;
 //	demoConditionVariable();
 	}catch(std::exception& e){
