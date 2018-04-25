@@ -34,7 +34,8 @@ void demoConditionVariable(){
 
 
 			this_thread::sleep_for(duration);
-
+// cv.wait macht lock und unlock, das geht mit lock_guard nicht
+//			std::lock_guard<std::mutex> lk(dcv.m);
 			std::unique_lock<std::mutex> lk(dcv.m);
 
 			cout << "before cv.wait(lk) " << __PRETTY_FUNCTION__ << "thread id: " << this_thread::get_id() << endl;
@@ -50,10 +51,9 @@ void demoConditionVariable(){
 		std::lock_guard<std::mutex> g(dcv.m);
 		dcv.b = true;
 	}
-
-	cout << "before cv.notify_one() " << endl;
-	dcv.cv.notify_one(); // #2
 	cout << "after cv.notify_one() " << endl;
+	dcv.cv.notify_one(); // #2
+	cout << "before cv.notify_one() " << endl;
 
 	t.join();
 }
