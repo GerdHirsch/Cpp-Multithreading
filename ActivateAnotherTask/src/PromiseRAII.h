@@ -15,7 +15,8 @@
 #include <vector>
 
 /**
-auto p = makeLatchedTasks(std::promise<bool>, task1, task2);
+ * application:
+auto p = makeLatchedTasks(std::promise<bool>(), task1, task2);
 ...
 p.set_setValue(true;)
 */
