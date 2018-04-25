@@ -33,12 +33,12 @@ int main(){
 //	demoPromiseFuture();
 //	cout << endl;
 //	demoPromiseSharedFuture();
-	cout << endl;
-	demoPromiseRAII();
-	cout << endl;
-	demoPromiseRAIISharedFuture();
 //	cout << endl;
-//	demoConditionVariable();
+//	demoPromiseRAII();
+//	cout << endl;
+//	demoPromiseRAIISharedFuture();
+	cout << endl;
+	demoConditionVariable();
 	}catch(std::exception& e){
 		cerr << "=== main() CATCH: " << e.what() << endl;
 	}

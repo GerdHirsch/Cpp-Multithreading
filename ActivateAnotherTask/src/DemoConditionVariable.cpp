@@ -25,7 +25,7 @@ void demoConditionVariable(){
 	cout << __PRETTY_FUNCTION__ << "thread id: " << this_thread::get_id() << endl;
 	DemoConditionVariable dcv;
 
-	bool notifyBeforeWait = false;
+	bool notifyBeforeWait = true;
 	auto duration = 100ms;
 
 	std::thread t
@@ -38,16 +38,18 @@ void demoConditionVariable(){
 			std::unique_lock<std::mutex> lk(dcv.m);
 
 			cout << "before cv.wait(lk) " << __PRETTY_FUNCTION__ << "thread id: " << this_thread::get_id() << endl;
+//			dcv.cv.wait(lk); // #1
 			dcv.cv.wait(lk,[&dcv]{return dcv.b;} ); // #1
 			cout << "after cv.wait(lk) " <<  endl;
 	});
 
-	if(notifyBeforeWait)
-		this_thread::sleep_for(duration - 100ms); // notifiy before wait
-	else
-		this_thread::sleep_for(duration + 100ms); // notifiy after wait
+	if(!notifyBeforeWait)
+		this_thread::sleep_for(duration + duration); // notifiy after wait
 
-	dcv.b = true;
+	{
+		std::lock_guard<std::mutex> g(dcv.m);
+		dcv.b = true;
+	}
 
 	cout << "before cv.notify_one() " << endl;
 	dcv.cv.notify_one(); // #2
