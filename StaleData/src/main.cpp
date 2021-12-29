@@ -14,10 +14,10 @@ int number{-1};
 //---------------------------------------------------------------------
 std::atomic<bool> readyAtomic{false};
 
-//static std::memory_order mo_load = std::memory_order_acquire;
-//static std::memory_order mo_store = std::memory_order_release;
-static std::memory_order mo_load = std::memory_order_relaxed;
-static std::memory_order mo_store = std::memory_order_relaxed;
+static std::memory_order mo_load = std::memory_order_acquire;
+static std::memory_order mo_store = std::memory_order_release;
+//static std::memory_order mo_load = std::memory_order_relaxed;
+//static std::memory_order mo_store = std::memory_order_relaxed;
 
 void taskAtomicFunction(){
 	cout << __PRETTY_FUNCTION__ << endl;
@@ -36,6 +36,7 @@ void demoAtomic(){
 
 	number = 42;
 
+//	std::this_thread::yield();
 	if(sleep) std::this_thread::sleep_for(1ns);
 
 	readyAtomic.store(true, mo_store);
@@ -62,6 +63,7 @@ void demoNonAtomic(){
 
 	number = 42;
 
+//	std::this_thread::yield();
 	if(sleep) std::this_thread::sleep_for(1ns);
 
 	ready = true;
@@ -71,5 +73,5 @@ void demoNonAtomic(){
 int main(){
 	cout << "StaleData" << endl;
 	demoNonAtomic();
-//	demoAtomic();
+	demoAtomic();
 }
